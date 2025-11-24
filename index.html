@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Text Files Index</title>
+  <style>
+    body { font-family: system-ui,Segoe UI,Arial; margin: 24px; }
+    .container { display: grid; grid-template-columns: 320px 1fr; gap: 20px; }
+    #fileList { list-style: none; padding: 0; margin: 0; }
+    #fileList li { margin: 6px 0; }
+    a.fileLink { color: #1a73e8; text-decoration: none; }
+    a.fileLink:hover { text-decoration: underline; }
+    #viewer { border: 1px solid #ddd; padding: 12px; border-radius: 6px; background:#fafafa; }
+    #fileContent { white-space: pre-wrap; font-family: Consolas, "Courier New", monospace; }
+    input#filter { width: 100%; padding: 6px; margin-bottom: 10px; box-sizing:border-box; }
+    .rawLink { margin-left: 8px; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <h1>Text Files Index</h1>
+  <p>Click any file to preview it in the viewer. You can also open the raw file in a new tab.</p>
+
+  <div class="container">
+    <aside>
+      <input id="filter" placeholder="Filter files (type to search)" />
+      <ul id="fileList">
+        <li><a class="fileLink" href="Pract_1.txt" data-file="Pract_1.txt">Pract_1.txt</a></li>
+        <li><a class="fileLink" href="Pract_2.txt" data-file="Pract_2.txt">Pract_2.txt</a></li>
+        <li><a class="fileLink" href="Pract_3.txt" data-file="Pract_3.txt">Pract_3.txt</a></li>
+        <li><a class="fileLink" href="Pract_4.txt" data-file="Pract_4.txt">Pract_4.txt</a></li>
+        <li><a class="fileLink" href="Pract_5.txt" data-file="Pract_5.txt">Pract_5.txt</a></li>
+        <li><a class="fileLink" href="Pract_6.txt" data-file="Pract_6.txt">Pract_6.txt</a></li>
+        <li><a class="fileLink" href="Pract_7.txt" data-file="Pract_7.txt">Pract_7.txt</a></li>
+        <li><a class="fileLink" href="Pract_8.txt" data-file="Pract_8.txt">Pract_8.txt</a></li>
+        <li><a class="fileLink" href="Pract_9.txt" data-file="Pract_9.txt">Pract_9.txt</a></li>
+        <li><a class="fileLink" href="Pract_10.txt" data-file="Pract_10.txt">Pract_10.txt</a></li>
+        <li><a class="fileLink" href="Pract_11.txt" data-file="Pract_11.txt">Pract_11.txt</a></li>
+      </ul>
+    </aside>
+
+    <main>
+      <div id="viewer">
+        <h2 id="viewerTitle">Select a file</h2>
+        <div>
+          <a id="openRaw" class="rawLink" href="#" target="_blank" rel="noopener">Open raw</a>
+        </div>
+        <hr />
+        <pre id="fileContent">No file selected.</pre>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const fileLinks = Array.from(document.querySelectorAll('.fileLink'));
+    const contentEl = document.getElementById('fileContent');
+    const titleEl = document.getElementById('viewerTitle');
+    const openRaw = document.getElementById('openRaw');
+    const filterInput = document.getElementById('filter');
+
+    function loadFile(file) {
+      fetch(file).then(r => {
+        if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
+        return r.text();
+      }).then(text => {
+        titleEl.textContent = file;
+        contentEl.textContent = text;
+        openRaw.href = file;
+      }).catch(err => {
+        titleEl.textContent = file + ' (error)';
+        contentEl.textContent = 'Error loading file:\n' + err;
+        openRaw.href = '#';
+      });
+    }
+
+    fileLinks.forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const f = a.dataset.file;
+        loadFile(f);
+      });
+    });
+
+    filterInput.addEventListener('input', () => {
+      const q = filterInput.value.trim().toLowerCase();
+      document.querySelectorAll('#fileList li').forEach(li => {
+        const txt = li.textContent.toLowerCase();
+        li.style.display = txt.includes(q) ? '' : 'none';
+      });
+    });
+  </script>
+</body>
+</html>

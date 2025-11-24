@@ -1,0 +1,44 @@
+/*
+A program for cryptoarithmetic puzzles (SWI-Prolog).
+Usage: sum([0,S,E,N,D],[0,M,O,R,E],[M,O,N,E,Y]).
+*/
+
+% Main sum predicate
+sum(N1, N2, N) :-    
+    sum1(N1, N2, N,
+         0, 0,                       % carry in, carry out
+         [0,1,2,3,4,5,6,7,8,9], _).   % digits left, digits remaining
+
+% Base case
+sum1([], [], [], C, C, Digits, Digits).
+
+% Recursive case
+sum1([D1|N1], [D2|N2], [D|N], C1, C, DigIn, DigOut) :-
+    sum1(N1, N2, N, C1, C2, DigIn, DigMid),
+    digitsum(D1, D2, C2, D, C, DigMid, DigOut).
+
+% Compute digit and carry
+digitsum(D1, D2, C1, D, C, DigIn, DigOut) :-
+    del_var(D1, DigIn, Dig1),
+    del_var(D2, Dig1, Dig2),
+    del_var(D,  Dig2, Dig3),
+    S is D1 + D2 + C1,
+    D is S mod 10,
+    C is S // 10,
+    DigOut = Dig3.
+
+% Remove digit A from list
+del_var(A, L, L) :-
+    nonvar(A), !.
+del_var(A, [A|L], L).
+del_var(A, [B|L], [B|L1]) :-
+    del_var(A, L, L1).
+
+% Puzzle definitions
+puzzle1([D,O,N,A,L,D],
+        [G,E,R,A,L,D],
+        [R,O,B,E,R,T]).
+
+puzzle2([0,S,E,N,D],
+        [0,M,O,R,E],
+        [M,O,N,E,Y]).
